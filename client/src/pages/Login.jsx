@@ -10,7 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+} from "@/features/api/authApi.js";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [signupData, setSignupData] = useState({
@@ -18,6 +24,24 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [
+    registerUser,
+    {
+      data: registerUserData,
+      error: registerUserError,
+      isLoading: registerUserIsLoading,
+      isSuccess: registerUserIsSuccess,
+    },
+  ] = useRegisterUserMutation();
+  const [
+    loginUser,
+    {
+      data: loginUserData,
+      error: loginUserError,
+      isLoading: loginUserIsLoading,
+      isSuccess: loginUserIsSuccess,
+    },
+  ] = useLoginUserMutation();
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -33,10 +57,33 @@ const Login = () => {
     }
   };
 
-  const registrationDataSubmitHandler = (type) => {
+  const registrationDataSubmitHandler = async (type) => {
     const inputData = type === "signup" ? signupData : loginData;
-    console.log(inputData);
+    const action = type === "signup" ? registerUser : loginUser;
+    await action(inputData);
   };
+
+  useEffect(() => {
+    if (registerUserData && registerUserIsSuccess) {
+      toast.success(registerUserData.message || "Signup successfully.");
+    }
+    if (registerUserError) {
+      toast.error(registerUserData.data.message || "Signup failed.");
+    }
+    if (loginUserData && loginUserIsSuccess) {
+      toast.success(loginUserData.message || "Login successfully.");
+    }
+    if (loginUserError) {
+      toast.error(loginUserData.data.message || "Login failed.");
+    }
+  }, [
+    loginUserIsLoading,
+    registerUserIsLoading,
+    loginUserError,
+    registerUserError,
+    loginUserData,
+    registerUserData,
+  ]);
   return (
     <div className=" w-full  flex items-center justify-center">
       <Tabs defaultValue="account" className="w-[400px]">
@@ -88,8 +135,18 @@ const Login = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => registrationDataSubmitHandler("signup")}>
-                Signup
+              <Button
+                disabled={registerUserIsLoading}
+                onClick={() => registrationDataSubmitHandler("signup")}
+              >
+                {registerUserIsLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  "Signup"
+                )}
               </Button>
             </CardFooter>
           </Card>
@@ -127,8 +184,18 @@ const Login = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => registrationDataSubmitHandler("login")}>
-                Login
+              <Button
+                disabled={loginUserIsLoading}
+                onClick={() => registrationDataSubmitHandler("login")}
+              >
+                {loginUserIsLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  "Login"
+                )}
               </Button>
             </CardFooter>
           </Card>
