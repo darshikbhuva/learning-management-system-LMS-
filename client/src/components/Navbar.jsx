@@ -22,7 +22,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-// import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import { useLogoutUserMutation } from "@/features/api/authApi";
 // import { toast } from "sonner";
 // import { useSelector } from "react-redux";
@@ -74,13 +74,10 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    {/* <Link to="my-learning">My learning</Link> */}
-                    My learning
+                    <Link to="my-learning">My learning</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    {" "}
-                    {/* <Link to="profile">Edit Profile</Link>{" "} */}
-                    Edit Profile
+                    <Link to="profile">Edit Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>Log out</DropdownMenuItem>
                 </DropdownMenuGroup>

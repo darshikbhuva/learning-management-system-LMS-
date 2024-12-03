@@ -16,9 +16,11 @@ import {
 } from "@/features/api/authApi.js";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
@@ -72,6 +74,7 @@ const Login = () => {
     }
     if (loginUserData && loginUserIsSuccess) {
       toast.success(loginUserData.message || "Login successfully.");
+      navigate("/");
     }
     if (loginUserError) {
       toast.error(loginUserError.data.message || "Login failed.");
