@@ -2,13 +2,15 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 
 import Login from "./pages/Login";
+import HeroSection from "./pages/student/HeroSection";
 
 function App() {
   return (
-    <div className=" flex flex-col gap-40">
+    <main>
       <Navbar />
+      <HeroSection />
       <Login />
-    </div>
+    </main>
   );
 }
 
