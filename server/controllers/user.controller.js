@@ -82,3 +82,68 @@ export const login = async (req, res) => {
     });
   }
 };
+
+export const logout = async (req, res) => {
+  try {
+    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+      message: "User logged out successfully.",
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to logout.",
+    });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get user Profile.",
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { name } = req.body;
+    const profilePhoto = req.file;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "user not found.",
+      });
+    }
+
+    const updateData = { name, photoURL };
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update user Profile.",
+    });
+  }
+};
