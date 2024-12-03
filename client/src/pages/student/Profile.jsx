@@ -14,65 +14,58 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import Course from "./Course";
 import { useLoadUserQuery } from "@/features/api/authApi";
-// import React, { useEffect, useState } from "react";
-// import Course from "./Course";
-// import {
-//   useLoadUserQuery,
-//   useUpdateUserMutation,
-// } from "@/features/api/authApi";
-// import { toast } from "sonner";
+import React, { useEffect, useState } from "react";
+import { useUpdateUserMutation } from "@/features/api/authApi";
+import { toast } from "sonner";
+// import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const { data, isLoading } = useLoadUserQuery();
+  // const { user } = useSelector((store) => store.auth);
+  const [
+    updateUser,
+    {
+      data: updateUserData,
+      isLoading: updateUserIsLoading,
+      isError,
+      error,
+      isSuccess,
+    },
+  ] = useUpdateUserMutation();
+
+  const [name, setName] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState("");
+
+  const { data, isLoading, refetch } = useLoadUserQuery();
+
+  const onChangeHandler = (e) => {
+    const file = e.target.files?.[0];
+    if (file) setProfilePhoto(file);
+  };
+
+  const updateUserHandler = async () => {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("profilePhoto", profilePhoto);
+    await updateUser(formData);
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [updateUserData, isError]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      refetch();
+      toast.success(data.message || "Profile updated.");
+    }
+    if (isError) {
+      toast.error(error.message || "Failed to update profile");
+    }
+  }, [error, updateUserData, isSuccess, isError]);
 
   if (isLoading) return <h1>Profile is loading...</h1>;
-  console.log(data);
 
-  const { user } = data;
-  // const [name, setName] = useState("");
-  // const [profilePhoto, setProfilePhoto] = useState("");
-
-  // const { data, isLoading, refetch } = useLoadUserQuery();
-  // const [
-  //   updateUser,
-  //   {
-  //     data: updateUserData,
-  //     isLoading: updateUserIsLoading,
-  //     isError,
-  //     error,
-  //     isSuccess,
-  //   },
-  // ] = useUpdateUserMutation();
-
-  // console.log(data);
-
-  // const onChangeHandler = (e) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) setProfilePhoto(file);
-  // };
-
-  // const updateUserHandler = async () => {
-  //   const formData = new FormData();
-  //   formData.append("name", name);
-  //   formData.append("profilePhoto", profilePhoto);
-  //   await updateUser(formData);
-  // };
-
-  // useEffect(() => {
-  //   refetch();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     refetch();
-  //     toast.success(data.message || "Profile updated.");
-  //   }
-  //   if (isError) {
-  //     toast.error(error.message || "Failed to update profile");
-  //   }
-  // }, [error, updateUserData, isSuccess, isError]);
-
-  // const user = data && data.user;
+  const user = data && data?.user;
 
   return (
     <div className="max-w-4xl mx-auto px-4 my-24">
@@ -131,8 +124,8 @@ const Profile = () => {
                   <Label>Name</Label>
                   <Input
                     type="text"
-                    // value={name}
-                    // onChange={(e) => setName(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Name"
                     className="col-span-3"
                   />
@@ -140,7 +133,7 @@ const Profile = () => {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label>Profile Photo</Label>
                   <Input
-                    // onChange={onChangeHandler}
+                    onChange={onChangeHandler}
                     type="file"
                     accept="image/*"
                     className="col-span-3"
@@ -149,10 +142,10 @@ const Profile = () => {
               </div>
               <DialogFooter>
                 <Button
-                  disabled={isLoading}
-                  // onClick={updateUserHandler}
+                  disabled={updateUserIsLoading}
+                  onClick={updateUserHandler}
                 >
-                  {isLoading ? (
+                  {updateUserIsLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please
                       wait

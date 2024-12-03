@@ -1,6 +1,6 @@
 import { USER_API } from "@/utils/constant.js";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { userLoggedIn } from "../authSlice.js";
+import { userLoggedIn, userLoggedOut } from "../authSlice.js";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -31,11 +31,40 @@ export const authApi = createApi({
         }
       },
     }),
+    logoutUser: builder.mutation({
+      query: () => ({
+        url: "logout",
+        method: "GET",
+      }),
+      async onQueryStarted(arg, { dispatch }) {
+        try {
+          dispatch(userLoggedOut());
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    }),
     loadUser: builder.query({
       query: () => ({
         url: "profile",
         method: "GET",
       }),
+      
+    }),
+    updateUser: builder.mutation({
+      query: (formData) => ({
+        url: "profile/update",
+        method: "PUT",
+        body: formData,
+      }),
+      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+        try {
+          const result = await queryFulfilled;
+          dispatch(userLoggedIn({ user: result.data.user }));
+        } catch (err) {
+          console.log(err);
+        }
+      },
     }),
   }),
 });
@@ -44,5 +73,6 @@ export const {
   useRegisterUserMutation,
   useLoginUserMutation,
   useLoadUserQuery,
-  useLogoutUserQuery,
+  useLogoutUserMutation,
+  useUpdateUserMutation,
 } = authApi;

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
+import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
   try {
@@ -138,7 +139,28 @@ export const updateProfile = async (req, res) => {
       });
     }
 
+    //extract publicId of the old image from the url if it exists;
+
+    if (user.photoURL) {
+      const publicId = user.photoURL.split("/").pop().split(".")[0]; //extract the publicId
+      deleteMediaFromCloudinary(publicId);
+    }
+
+    //upload new photo
+
+    const cloudResponse = await uploadMedia(profilePhoto.path);
+    const photoURL = cloudResponse.secure_url;
+
     const updateData = { name, photoURL };
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    }).select("-password");
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+      message: "Profile updated successfully",
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({

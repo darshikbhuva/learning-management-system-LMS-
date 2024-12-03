@@ -88,8 +88,8 @@ const Login = () => {
     registerUserData,
   ]);
   return (
-    <div className=" w-full h-screen  flex items-center justify-center">
-      <Tabs defaultValue="account" className="w-[400px]">
+    <div className=" w-screen h-screen  flex items-center justify-center">
+      <Tabs defaultValue="Login" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="Signup">Signup</TabsTrigger>
           <TabsTrigger value="Login">Login</TabsTrigger>
@@ -99,7 +99,7 @@ const Login = () => {
             <CardHeader>
               <CardTitle>Signup</CardTitle>
               <CardDescription>
-                Create a new account and dick signup when you're done.
+                Create a new account and click signup when you're done.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
